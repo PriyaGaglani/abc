@@ -1,0 +1,75 @@
+EXP 3
+
+STEPS : 
+set path = c:\ to bin, cd c:\Priya, javac *.java and rmiregistry ..in another cmd server
+
+set path = c:\ to bin, cd c:\Priya, java RMIServer..in another cmd client 
+
+
+**In MyInterfaceImpl : protected to public MyInterfaceImpl() throws RemoteException {
+also (i) javac *.java (ii)java RMIServer (iii) Myinterface then MyinterfacImpl**
+
+1. MyInterface.java code: 
+import java.rmi.*;
+public interface MyInterface extends Remote
+{
+public String countInput(String input) throws RemoteException;
+}
+
+2. MyInterfaceImpl.java code: 
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
+public class MyInterfaceImpl extends UnicastRemoteObject implements MyInterface {
+
+    protected MyInterfaceImpl() throws RemoteException {
+        super();
+    }
+
+    @Override
+    public String countInput(String input) throws RemoteException {
+        return "You have typed " + input.length() + " letters!!";
+    }
+}
+
+3. RMIServer.java code: 
+import java.rmi.*;
+import java.rmi.server.*;
+public class RMIServer extends UnicastRemoteObject
+{
+public RMIServer() throws RemoteException
+{
+System.out.println("Remote Server is running Now.!!");
+}
+public static void main(String arg[])
+{
+try{
+MyInterfaceImpl my_int=new MyInterfaceImpl();
+Naming.rebind("rmiInterface",my_int);
+System.out.println("Server ready.");
+}
+catch(Exception e)
+{ System.out.println("Exception occurred : "+e.getMessage()); }
+
+}
+}
+
+4. RMIClient.java code: 
+import java.rmi.*;
+import java.io.*;
+public class RMIClient
+{
+public static void main(String args[])
+{
+try
+{ BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+MyInterface my_int=( MyInterface)Naming.lookup("rmiInterface");
+System.out.println("Type something...");
+String input=br.readLine();
+System.out.println(my_int.countInput(input));
+}
+catch(Exception e) {
+System.out.println("Exception occurred : "+e.getMessage());
+}
+}
+}

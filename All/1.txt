@@ -1,0 +1,227 @@
+EXP 1
+
+STEPS : 
+set path = c:\ to bin, cd c:\Priya, javac Server.java and java Server.java ..in another cmd client 
+
+1. Server.java
+import java.io.*;
+import java.net.*;
+public class Server
+ {
+    public static void main(String[] args) 
+{        
+try 
+{         
+  ServerSocket ss = new ServerSocket(6666);
+  Socket s = ss.accept();             
+  DataInputStream dis = new DataInputStream(s.getInputStream());           
+  String str = dis.readUTF();      
+  System.out.println("Message from client: " + str);            				     
+  dis.close();          
+  s.close();       
+  ss.close();
+}
+ catch (Exception e)
+ {
+            System.out.println(e);
+ } 
+ }
+}
+
+2. Client.java
+import java.io.*;
+import java.net.*;
+import java.util.Scanner; 
+public class Client {
+    public static void main(String[] args) {
+        try {
+            Socket s = new Socket("localhost", 6666);
+            DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+             Scanner scanner = new Scanner(System.in);
+            System.out.print("Enter message to send to the server: ");
+            String message = scanner.nextLine();
+             dout.writeUTF(message);
+            dout.flush();
+            dout.close();
+            s.close();
+            scanner.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
+
+Bidirectional 
+
+1. Server.java
+import java.io.*;
+import java.net.*;
+
+public class Server
+{
+public static void main(String[] args)
+{
+try
+{
+ServerSocket ss = new ServerSocket(6666);
+Socket s = ss.accept();
+        DataInputStream dis = new DataInputStream(s.getInputStream());  
+        DataOutputStream dout = new DataOutputStream(s.getOutputStream());  
+
+        String str = dis.readUTF();  
+        System.out.println("Message from client: " + str);  
+
+        String reply = "Message received: " + str;  
+        dout.writeUTF(reply);  
+        dout.flush();  
+
+        dis.close();  
+        dout.close();  
+        s.close();  
+        ss.close();  
+    }  
+    catch (Exception e)  
+    {  
+        System.out.println(e);  
+    }   
+}  
+}
+
+2. Client.java
+import java.io.*;
+import java.net.*;
+import java.util.Scanner;
+
+public class Client
+{
+public static void main(String[] args)
+{
+try
+{
+Socket s = new Socket("localhost", 6666);
+        DataOutputStream dout = new DataOutputStream(s.getOutputStream());  
+        DataInputStream dis = new DataInputStream(s.getInputStream());  
+
+        Scanner scanner = new Scanner(System.in);  
+        System.out.print("Enter message to send to the server: ");  
+        String message = scanner.nextLine();  
+
+        dout.writeUTF(message);  
+        dout.flush();  
+
+        String serverReply = dis.readUTF();  
+        System.out.println("Server replied: " + serverReply);  
+
+        dout.close();  
+        dis.close();  
+        s.close();  
+        scanner.close();  
+    }  
+    catch (Exception e)  
+    {  
+        System.out.println(e);  
+    }  
+}  
+}
+
+
+Square:
+
+1. MyServer.java code:
+import java.io.*;
+
+import java.net.*;
+
+public class MyServer{
+
+public static void main(String[] args)
+{
+try
+{
+ServerSocket ss=new ServerSocket(6666);
+Socket s=ss.accept(); 
+DataInputStream dis=new DataInputStream(s.getInputStream());
+int num=(int)dis.readInt();
+System.out.println("Square of "+num+" is "+num*num);
+ss.close();
+}catch (Exception e){
+System.out.println(e);}}}
+
+2. MyClient.java code:
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+public class MyClient
+{
+	public static void main(String[] args)
+	{
+		try{
+			Socket s = new Socket("localhost",6666);
+			Scanner sc = new Scanner(System.in);
+			DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+			System.out.println("Enter a number: ");
+			int n = sc.nextInt();
+			dout.writeInt(n);
+			dout.flush();
+			dout.close();
+			s.close();
+		}catch(Exception e){
+			System.out.println(e);
+		}
+
+	}
+}
+
+Square Root :
+
+
+1. MyServer.java code:
+import java.io.*;
+import java.net.*;
+
+public class MyServer{
+    public static void main(String[] args)
+    {
+        try
+        {
+            ServerSocket ss=new ServerSocket(6666);
+            Socket s=ss.accept(); 
+            DataInputStream dis=new DataInputStream(s.getInputStream());
+            int num=(int)dis.readInt();
+            System.out.println("Squareroot of "+num+" is "+Math.sqrt(num));
+            ss.close();
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+    }
+}
+
+
+2. MyClient.java code: 
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+public class MyClient
+{
+	public static void main(String[] args)
+	{
+		try{
+			Socket s = new Socket("localhost",6666);
+			Scanner sc = new Scanner(System.in);
+			DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+			System.out.println("Enter a number: ");
+			int n = sc.nextInt();
+			dout.writeInt(n);
+			dout.flush();
+			dout.close();
+			s.close();
+		}
+		catch(Exception e){
+			System.out.println(e);
+		}
+
+	}
+}

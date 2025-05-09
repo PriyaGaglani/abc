@@ -1,0 +1,115 @@
+1) Open Netbeans,
+Go to Services -> Servers -> Glassfish Server. Right click and start GlassFish Server
+
+(i)Open server admin console by the URL http://localhost:4848    
+
+1.Click on the JMS Resource -> Connection Factories -> New, now write the JNDI name jms/QueueFactory and select the Resource Type as javax.jms.QueueConnectionFactory then click on ok button.
+
+2.Click on the JMS Resource -> Destination Resources -> New, now write the JNDI name jms/myQueue, physical destination name PC and Resource type javax.jms.Queue then click on ok button.
+
+
+(ii)After creating connection factory and destination resource, go to Netbeans and restart GlassFish Server.
+
+
+
+
+2)
+On Netbeans, click on new project.
+Select Java EE -> Enterprise Application Client
+Click next
+
+Enter Project Name QueueSender and click next.
+
+Select GlassFish Server 4.1 in Server and Java EE 6 and click Finish.
+
+Repeat the same process and create another project QueueReceiver.
+
+3)
+code of QueueSender -> Main.java
+package queuesender;
+
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.Resource;
+import javax.jms.*;
+
+public class Main {
+
+@Resource(mappedName = "jms/QueueFactory")
+private static QueueConnectionFactory factoryQueue;
+
+@Resource(mappedName = "jms/myQueue")
+private static Queue jmsQueue;
+
+public static void main(String[] args) {
+    Scanner sc = new Scanner(System.in);
+    try (QueueConnection connection = factoryQueue.createQueueConnection();
+         QueueSession session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE)) {
+
+        connection.start();
+        MessageProducer msgProducer = session.createProducer(jmsQueue);
+
+        System.out.print("Enter Something: ");
+        String str = sc.nextLine();
+
+        Message msg = session.createTextMessage(str);
+        msgProducer.send(msg);
+
+        System.out.println("Message sent!!");
+        sc.close();
+
+    } catch (JMSException ex) {
+        Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+    }
+}
+}
+ 
+
+code of QueueReceiver -> Main.java
+
+
+package queuereceiver;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.Resource;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.Queue;
+import javax.jms.QueueConnection;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.QueueSession;
+import javax.jms.Session;
+
+public class Main {
+
+    @Resource(mappedName = "jms/QueueFactory")
+    private static QueueConnectionFactory factoryQueue;
+
+    @Resource(mappedName = "jms/myQueue")
+    private static Queue jmsQueue;
+
+    public static void main(String[] args) {
+        System.out.println("Hello World Enterprise Application Client!");
+        try (QueueConnection connection = factoryQueue.createQueueConnection();
+             QueueSession session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE)) {
+
+            connection.start();
+            MessageConsumer msgConsumer = session.createConsumer(jmsQueue);
+            Message msg = msgConsumer.receive();
+            String message = msg.getBody(String.class);
+            System.out.println("Message Consumer: " + message);
+
+        } catch (JMSException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+}
+
+4)
+Clean and build both Projects.
+Run QueueSender project.  ............Enter the message you want to send
+
+then Run QueueReceiver project.

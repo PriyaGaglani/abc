@@ -1,0 +1,457 @@
+Steps:
+
+1. Create a new Web Application.
+File->New Project from the NetBeans menu.
+Java Web-> Web Application.
+Click Next.
+
+2.Enter the project name as SessionBeanDemo. 
+Click Next.
+
+
+3. Verify the following :
+GlassFish Server 3.1.2 is selected as the server.
+Java EE 6 Web is selected as Java EE Version.
+Click Finish.
+
+
+
+1. Right-click on the SessionBeanDemo project and select New->Other.
+
+Enterprise JavaBeans->Session Bean.
+Click Next.
+
+2. Specify the Session Bean information as follows:
+EJB Name: SayHelloSessionBean
+Package Name: com.example
+Ensure Stateless is selected as the Session Type
+Select Local as the option for Create Interface.
+Click Finish.
+
+
+3. Double-click SayHelloSessionBeanLocal.java in the Source Packages node to open in the code editor.
+Add the following line of code to the SayHelloSessionBeanLocal interface to declare the sayHello method.
+---
+String sayHello(String name) ;
+----
+
+4. Double-click SayHelloSessionBean.java in the Source Packages node to open in the code editor.
+Implement sayHello method in the SayHelloSessionBean.
+----
+public String sayHello(String name) {
+return "Hello " + name;
+}
+----
+
+1. Right-click on the SessionBeanDemo project and select New->Other.
+
+Web->Servlet.
+Click Next.
+
+2. Specify the Servlet information as follows:
+Class Name: SayHelloServlet
+Package Name: com.example
+Click Finish.
+
+3. Perform the following changes to the SayHelloServlet.
+a. Import the following package.
+----
+import javax.ejb.EJB;
+----
+b.Add a field of type SayHelloSessionBeanLocal named sayHelloSessionBean.
+----
+@EJB
+private SayHelloSessionBeanLocal sayHelloSessionBean;
+----
+
+4. In the ProcessRequest method of SayHelloServlet, make the following changes.
+a. Add the below lines of code
+----
+String str1=request.getParameter("name");
+String str2=sayHelloSessionBean.sayHello(str1);
+b. Add the below line of code to modify the HTML response produced by the SayHelloServlet.
+----
+out.println("<h1>" + str2 + "</h1>");
+----
+
+
+1. Open the existing index.jsp file from the Web Pages portion of the SessionBeanDemo project.
+
+2. Modify the title and heading of the page to Say Hello.
+
+3. Add a form to the body of the index.jsp page which contains one text box named name and a submit button named OK.
+----
+<form method="post" action="SayHelloServlet">
+Enter Your Name: <input type="text" name="name">
+<input type="submit" value="OK">
+</form>
+------
+
+Run: 1. Right-click SessionBeanDemo project in the projects window and select Build.
+2. In the Projects window, right-click SessionBeanDemo and select Run.
+
+
+
+Calculator: 
+1)SayHelloSessionBeanLocal.java
+package com.example;
+
+import javax.ejb.Local;
+
+@Local
+public interface SayHelloSessionBeanLocal {
+    double add(double a, double b);
+    double subtract(double a, double b);
+    double multiply(double a, double b);
+    String divide(double a, double b);
+    String modulus(double a, double b);
+    String sayHello(String name);
+}
+
+
+2)SayHelloSessionBean.java
+package com.example;
+
+import javax.ejb.Stateless;
+
+/**
+ *
+ * @author Priya
+ */
+@Stateless
+public class SayHelloSessionBean implements SayHelloSessionBeanLocal {
+
+    // Business methods for calculator operations
+
+    public double add(double a, double b) {
+        return a + b;
+    }
+
+    public double subtract(double a, double b) {
+        return a - b;
+    }
+
+    public double multiply(double a, double b) {
+        return a * b;
+    }
+
+    public String divide(double a, double b) {
+        if (b == 0) {
+            return "Error: Cannot divide by zero";
+        } else {
+            return "Result: " + (a / b);
+        }
+    }
+
+    public String modulus(double a, double b) {
+        if (b == 0) {
+            return "Error: Cannot perform modulus with zero";
+        } else {
+            return "Result: " + (a % b);
+        }
+    }
+
+    // Optional: retain the original sayHello() method
+    public String sayHello(String name) {
+        return "Hello " + name;
+    }
+}
+
+3)SayHelloServlet.java
+package com.example;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+import javax.ejb.EJB;
+
+@WebServlet(name = "SayHelloServlet", urlPatterns = {"/SayHelloServlet"})
+public class SayHelloServlet extends HttpServlet {
+
+    @EJB
+    private SayHelloSessionBeanLocal sayHelloSessionBean;
+
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String num1Str = request.getParameter("num1");
+        String num2Str = request.getParameter("num2");
+        String operation = request.getParameter("operation");
+
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
+        double num1 = 0, num2 = 0;
+        String message = "";
+
+        try {
+            num1 = Double.parseDouble(num1Str);
+            num2 = Double.parseDouble(num2Str);
+
+            // Delegate the operations to the session bean
+            switch (operation) {
+                case "add":
+                    message = "Addition Result: " + sayHelloSessionBean.add(num1, num2);
+                    break;
+                case "subtract":
+                    message = "Subtraction Result: " + sayHelloSessionBean.subtract(num1, num2);
+                    break;
+                case "multiply":
+                    message = "Multiplication Result: " + sayHelloSessionBean.multiply(num1, num2);
+                    break;
+                case "divide":
+                    message = sayHelloSessionBean.divide(num1, num2);
+                    break;
+                case "modulus":
+                    message = sayHelloSessionBean.modulus(num1, num2);
+                    break;
+                default:
+                    message = "Invalid Operation Selected.";
+            }
+
+        } catch (NumberFormatException e) {
+            message = "Invalid input: Please enter valid numbers.";
+        }
+
+        try {
+            out.println("<!DOCTYPE html>");
+            out.println("<html><head><title>Calculator Result</title></head><body>");
+            out.println("<h2>" + message + "</h2>");
+            // Adding a back button to go to the calculator form
+            out.println("<form action=\"index.jsp\" method=\"get\">");
+            out.println("<input type=\"submit\" value=\"Back to Calculator\">");
+            out.println("</form>");
+            out.println("</body></html>");
+        } finally {
+            out.close();
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    public String getServletInfo() {
+        return "Calculator logic inside SayHelloServlet using Stateless Session Bean";
+    }
+
+}
+
+
+
+
+4)index.jsp
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Simple Calculator</title>
+    </head>
+    <body>
+        <h1>Calculator</h1>
+        <form method="post" action="SayHelloServlet">
+            Enter Number 1: <input type="text" name="num1" required><br><br>
+            Enter Number 2: <input type="text" name="num2" required><br><br>
+            Select Operation:
+            <select name="operation" required>
+                <option value="add">Addition</option>
+                <option value="subtract">Subtraction</option>
+                <option value="multiply">Multiplication</option>
+                <option value="divide">Division</option>
+                <option value="modulus">Modulus</option>
+            </select><br><br>
+            <input type="submit" value="Calculate">
+        </form>
+    </body>
+</html>
+
+
+
+
+
+String
+
+1)SayHelloSessionBeanLocal.java
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.Example;
+
+import javax.ejb.Local;
+
+/**
+ *
+ * @author Priya
+ */
+@Local
+public interface SayHelloSessionBeanLocal {
+    
+    String sayHello(String name) ;
+
+    
+}
+
+2)SayHelloSessionBean.java
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.Example;
+
+import javax.ejb.Stateless;
+
+/**
+ *
+ * @author Priya
+ */
+@Stateless
+public class SayHelloSessionBean implements SayHelloSessionBeanLocal {
+    
+    public String sayHello(String name) {
+        return "Hello " + name;
+}
+
+
+    // Add business logic below. (Right-click in editor and choose
+    // "Insert Code > Add Business Method")
+}
+
+3)SayHelloServlet.java
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.Example;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ *
+ * @author Priya
+ */
+@WebServlet(name = "SayHelloServlet", urlPatterns = {"/SayHelloServlet"})
+public class SayHelloServlet extends HttpServlet {
+    @EJB
+private SayHelloSessionBeanLocal sayHelloSessionBean;
+
+
+
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+            String str1=request.getParameter("name");
+            String str2=sayHelloSessionBean.sayHello(str1);
+
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        try {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet SayHelloServlet</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>" + str2 + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
+        } finally {
+                out.close();
+            }
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
+}
+
+4)index.jsp
+<%-- 
+    Document   : index
+    Created on : 9 May, 2025, 12:28:35 AM
+    Author     : Priya
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Say Hello</title>
+    </head>
+    <body>
+        <h1>Say Hello</h1>
+        <form method="post" action="SayHelloServlet">
+    Enter Your Name: <input type="text" name="name">
+    <input type="submit" value="OK">
+    </form>
+    </body>
+</html>

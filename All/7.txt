@@ -1,0 +1,72 @@
+Steps:
+
+1. 
+File->New Project 
+Java Web-> Web Application.
+Click Next.
+
+2.project name as CalculatorProject
+Click Next.
+
+
+3. Verify the following :
+GlassFish Server 3.1.2 is selected as the server.
+Java EE 6 Web is selected as Java EE Version.
+Click Finish.
+
+
+---
+1. Right-click on the CalculatorProject project and select New->Web Service
+
+2. Web Service Name as CalculatorWS and Package as Calculatorpkg
+*select create web service from scratch*
+Click Finish.
+
+-----
+
+go to Web Services Folder ----CalculatorWS...right click-> add operation 
+
+Name: add 
+Return type: int 
+
+click ->add 
+
+name    type  
+1->i       int
+2->j       int
+
+click ok
+
+----
+
+CalculatorWS.java code:
+package calculatorpkg;
+
+import javax.jws.WebService;
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+
+/**
+ *
+ * @author Priya
+ */
+@WebService()
+public class CalculatorWS {
+
+    
+    @WebMethod(operationName = "add")
+    public int add(@WebParam(name = "i") 
+     int i, @WebParam(name = "j") 
+     int j) {
+        //TODO write your implementation code here:
+        int k=i+j;
+        return k;
+
+    }
+}
+
+-------
+clean and build project 
+go to services in that servers->right click on glassfish server 4.1 ->start/restart(wait)
+then right click on CalculatorProject->deploy
+then right click on CalculatorWS -> test web service
