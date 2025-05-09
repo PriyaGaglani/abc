@@ -1,0 +1,73 @@
+EXP 2
+
+STEPS : 
+set path = c:\ to bin, cd c:\Priya, javac *.java and rmiregistry ..in another cmd server
+
+set path = c:\ to bin, cd c:\Priya, java Server.java ..in another cmd client 
+
+
+1. MyRemote.java code:
+import java.rmi.*; 
+public interface MyRemote extends Remote  
+{ 
+ String sayHello() throws RemoteException; 
+} 
+
+
+2. MyRemoteImpl.java code:
+import java.rmi.*; 
+import java.rmi.server.*; 
+public class MyRemoteImpl extends UnicastRemoteObject implements MyRemote  { 
+ public MyRemoteImpl() throws RemoteException 
+{ 
+ super(); 
+ } 
+ @Override 
+public String sayHello() throws RemoteException  
+{ 
+ return "Hello from the remote server!"; 
+ } 
+} 
+
+3.Server.java code:
+import java.rmi.*; 
+import java.rmi.registry.*; 
+public class Server 
+{ 
+ public static void main(String[] args) 
+{ 
+ try { 
+// Create the remote object 
+MyRemoteImpl remoteObject = new MyRemoteImpl(); 
+// Bind the remote object to the RMI registry 
+Registry registry = LocateRegistry.createRegistry(3742);  
+// RMI registry on port 3742 
+registry.rebind("MyRemoteService", remoteObject); 
+System.out.println("Server ready."); 
+} catch (Exception e) { 
+System.out.println("Server exception: " + e.toString());
+e.printStackTrace(); 
+} 
+ } 
+} 
+
+
+4. Client.java code:
+import java.rmi.registry.LocateRegistry; 
+import java.rmi.registry.Registry; 
+import java.rmi.*; 
+public class Client { 
+public static void main(String[] args) { 
+try { 
+// Locate the remote object in the RMI registry 
+Registry registry = LocateRegistry.getRegistry("localhost", 3742);  
+// Connect to the RMI registry on localhost 
+MyRemote stub = (MyRemote) registry.lookup("MyRemoteService"); // Call the remote method 
+String response = stub.sayHello(); 
+System.out.println("Response from server: " + response); 
+} catch (Exception e) { 
+System.out.println("Client exception: " + e.toString()); 
+e.printStackTrace(); 
+} 
+} 
+} 

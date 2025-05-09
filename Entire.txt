@@ -1,0 +1,1220 @@
+EXP 1
+
+STEPS : 
+set path = c:\ to bin, cd c:\Priya, javac Server.java and java Server.java ..in another cmd client 
+
+1. Server.java
+import java.io.*;
+import java.net.*;
+public class Server
+ {
+    public static void main(String[] args) 
+{        
+try 
+{         
+  ServerSocket ss = new ServerSocket(6666);
+  Socket s = ss.accept();             
+  DataInputStream dis = new DataInputStream(s.getInputStream());           
+  String str = dis.readUTF();      
+  System.out.println("Message from client: " + str);            				     
+  dis.close();          
+  s.close();       
+  ss.close();
+}
+ catch (Exception e)
+ {
+            System.out.println(e);
+ } 
+ }
+}
+
+2. Client.java
+import java.io.*;
+import java.net.*;
+import java.util.Scanner; 
+public class Client {
+    public static void main(String[] args) {
+        try {
+            Socket s = new Socket("localhost", 6666);
+            DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+             Scanner scanner = new Scanner(System.in);
+            System.out.print("Enter message to send to the server: ");
+            String message = scanner.nextLine();
+             dout.writeUTF(message);
+            dout.flush();
+            dout.close();
+            s.close();
+            scanner.close();
+        } catch (Exception e) {
+            System.out.println(e);
+        }
+    }
+}
+
+Bidirectional 
+
+1. Server.java
+import java.io.*;
+import java.net.*;
+
+public class Server
+{
+public static void main(String[] args)
+{
+try
+{
+ServerSocket ss = new ServerSocket(6666);
+Socket s = ss.accept();
+        DataInputStream dis = new DataInputStream(s.getInputStream());  
+        DataOutputStream dout = new DataOutputStream(s.getOutputStream());  
+
+        String str = dis.readUTF();  
+        System.out.println("Message from client: " + str);  
+
+        String reply = "Message received: " + str;  
+        dout.writeUTF(reply);  
+        dout.flush();  
+
+        dis.close();  
+        dout.close();  
+        s.close();  
+        ss.close();  
+    }  
+    catch (Exception e)  
+    {  
+        System.out.println(e);  
+    }   
+}  
+}
+
+2. Client.java
+import java.io.*;
+import java.net.*;
+import java.util.Scanner;
+
+public class Client
+{
+public static void main(String[] args)
+{
+try
+{
+Socket s = new Socket("localhost", 6666);
+        DataOutputStream dout = new DataOutputStream(s.getOutputStream());  
+        DataInputStream dis = new DataInputStream(s.getInputStream());  
+
+        Scanner scanner = new Scanner(System.in);  
+        System.out.print("Enter message to send to the server: ");  
+        String message = scanner.nextLine();  
+
+        dout.writeUTF(message);  
+        dout.flush();  
+
+        String serverReply = dis.readUTF();  
+        System.out.println("Server replied: " + serverReply);  
+
+        dout.close();  
+        dis.close();  
+        s.close();  
+        scanner.close();  
+    }  
+    catch (Exception e)  
+    {  
+        System.out.println(e);  
+    }  
+}  
+}
+
+
+Square:
+
+1. MyServer.java code:
+import java.io.*;
+
+import java.net.*;
+
+public class MyServer{
+
+public static void main(String[] args)
+{
+try
+{
+ServerSocket ss=new ServerSocket(6666);
+Socket s=ss.accept(); 
+DataInputStream dis=new DataInputStream(s.getInputStream());
+int num=(int)dis.readInt();
+System.out.println("Square of "+num+" is "+num*num);
+ss.close();
+}catch (Exception e){
+System.out.println(e);}}}
+
+2. MyClient.java code:
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+public class MyClient
+{
+	public static void main(String[] args)
+	{
+		try{
+			Socket s = new Socket("localhost",6666);
+			Scanner sc = new Scanner(System.in);
+			DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+			System.out.println("Enter a number: ");
+			int n = sc.nextInt();
+			dout.writeInt(n);
+			dout.flush();
+			dout.close();
+			s.close();
+		}catch(Exception e){
+			System.out.println(e);
+		}
+
+	}
+}
+
+Square Root :
+
+
+1. MyServer.java code:
+import java.io.*;
+import java.net.*;
+
+public class MyServer{
+    public static void main(String[] args)
+    {
+        try
+        {
+            ServerSocket ss=new ServerSocket(6666);
+            Socket s=ss.accept(); 
+            DataInputStream dis=new DataInputStream(s.getInputStream());
+            int num=(int)dis.readInt();
+            System.out.println("Squareroot of "+num+" is "+Math.sqrt(num));
+            ss.close();
+        }
+        catch(Exception e){
+            System.out.println(e);
+        }
+    }
+}
+
+
+2. MyClient.java code: 
+import java.io.*;
+import java.net.*;
+import java.util.*;
+
+public class MyClient
+{
+	public static void main(String[] args)
+	{
+		try{
+			Socket s = new Socket("localhost",6666);
+			Scanner sc = new Scanner(System.in);
+			DataOutputStream dout = new DataOutputStream(s.getOutputStream());
+			System.out.println("Enter a number: ");
+			int n = sc.nextInt();
+			dout.writeInt(n);
+			dout.flush();
+			dout.close();
+			s.close();
+		}
+		catch(Exception e){
+			System.out.println(e);
+		}
+
+	}
+}
+
+
+
+
+
+
+EXP 2
+
+STEPS : 
+set path = c:\ to bin, cd c:\Priya, javac *.java and rmiregistry ..in another cmd server
+
+set path = c:\ to bin, cd c:\Priya, java Server.java ..in another cmd client 
+
+
+1. MyRemote.java code:
+import java.rmi.*; 
+public interface MyRemote extends Remote  
+{ 
+ String sayHello() throws RemoteException; 
+} 
+
+
+2. MyRemoteImpl.java code:
+import java.rmi.*; 
+import java.rmi.server.*; 
+public class MyRemoteImpl extends UnicastRemoteObject implements MyRemote  { 
+ public MyRemoteImpl() throws RemoteException 
+{ 
+ super(); 
+ } 
+ @Override 
+public String sayHello() throws RemoteException  
+{ 
+ return "Hello from the remote server!"; 
+ } 
+} 
+
+3.Server.java code:
+import java.rmi.*; 
+import java.rmi.registry.*; 
+public class Server 
+{ 
+ public static void main(String[] args) 
+{ 
+ try { 
+// Create the remote object 
+MyRemoteImpl remoteObject = new MyRemoteImpl(); 
+// Bind the remote object to the RMI registry 
+Registry registry = LocateRegistry.createRegistry(3742);  
+// RMI registry on port 3742 
+registry.rebind("MyRemoteService", remoteObject); 
+System.out.println("Server ready."); 
+} catch (Exception e) { 
+System.out.println("Server exception: " + e.toString());
+e.printStackTrace(); 
+} 
+ } 
+} 
+
+
+4. Client.java code:
+import java.rmi.registry.LocateRegistry; 
+import java.rmi.registry.Registry; 
+import java.rmi.*; 
+public class Client { 
+public static void main(String[] args) { 
+try { 
+// Locate the remote object in the RMI registry 
+Registry registry = LocateRegistry.getRegistry("localhost", 3742);  
+// Connect to the RMI registry on localhost 
+MyRemote stub = (MyRemote) registry.lookup("MyRemoteService"); // Call the remote method 
+String response = stub.sayHello(); 
+System.out.println("Response from server: " + response); 
+} catch (Exception e) { 
+System.out.println("Client exception: " + e.toString()); 
+e.printStackTrace(); 
+} 
+} 
+} 
+
+
+
+EXP 3
+
+STEPS : 
+set path = c:\ to bin, cd c:\Priya, javac *.java and rmiregistry ..in another cmd server
+
+set path = c:\ to bin, cd c:\Priya, java RMIServer..in another cmd client 
+
+
+**In MyInterfaceImpl : protected to public MyInterfaceImpl() throws RemoteException {
+also (i) javac *.java (ii)java RMIServer (iii) Myinterface then MyinterfacImpl**
+
+1. MyInterface.java code: 
+import java.rmi.*;
+public interface MyInterface extends Remote
+{
+public String countInput(String input) throws RemoteException;
+}
+
+2. MyInterfaceImpl.java code: 
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+
+public class MyInterfaceImpl extends UnicastRemoteObject implements MyInterface {
+
+    protected MyInterfaceImpl() throws RemoteException {
+        super();
+    }
+
+    @Override
+    public String countInput(String input) throws RemoteException {
+        return "You have typed " + input.length() + " letters!!";
+    }
+}
+
+3. RMIServer.java code: 
+import java.rmi.*;
+import java.rmi.server.*;
+public class RMIServer extends UnicastRemoteObject
+{
+public RMIServer() throws RemoteException
+{
+System.out.println("Remote Server is running Now.!!");
+}
+public static void main(String arg[])
+{
+try{
+MyInterfaceImpl my_int=new MyInterfaceImpl();
+Naming.rebind("rmiInterface",my_int);
+System.out.println("Server ready.");
+}
+catch(Exception e)
+{ System.out.println("Exception occurred : "+e.getMessage()); }
+
+}
+}
+
+4. RMIClient.java code: 
+import java.rmi.*;
+import java.io.*;
+public class RMIClient
+{
+public static void main(String args[])
+{
+try
+{ BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+MyInterface my_int=( MyInterface)Naming.lookup("rmiInterface");
+System.out.println("Type something...");
+String input=br.readLine();
+System.out.println(my_int.countInput(input));
+}
+catch(Exception e) {
+System.out.println("Exception occurred : "+e.getMessage());
+}
+}
+}
+
+
+
+
+
+EXP 4TH
+
+
+
+Steps:
+
+1. Create a new Web Application.
+File->New Project from the NetBeans menu.
+Java Web-> Web Application.
+Click Next.
+
+2.Enter the project name as SessionBeanDemo. 
+Click Next.
+
+
+3. Verify the following :
+GlassFish Server 3.1.2 is selected as the server.
+Java EE 6 Web is selected as Java EE Version.
+Click Finish.
+
+
+
+1. Right-click on the SessionBeanDemo project and select New->Other.
+
+Enterprise JavaBeans->Session Bean.
+Click Next.
+
+2. Specify the Session Bean information as follows:
+EJB Name: SayHelloSessionBean
+Package Name: com.example
+Ensure Stateless is selected as the Session Type
+Select Local as the option for Create Interface.
+Click Finish.
+
+
+3. Double-click SayHelloSessionBeanLocal.java in the Source Packages node to open in the code editor.
+Add the following line of code to the SayHelloSessionBeanLocal interface to declare the sayHello method.
+---
+String sayHello(String name) ;
+----
+
+4. Double-click SayHelloSessionBean.java in the Source Packages node to open in the code editor.
+Implement sayHello method in the SayHelloSessionBean.
+----
+public String sayHello(String name) {
+return "Hello " + name;
+}
+----
+
+1. Right-click on the SessionBeanDemo project and select New->Other.
+
+Web->Servlet.
+Click Next.
+
+2. Specify the Servlet information as follows:
+Class Name: SayHelloServlet
+Package Name: com.example
+Click Finish.
+
+3. Perform the following changes to the SayHelloServlet.
+a. Import the following package.
+----
+import javax.ejb.EJB;
+----
+b.Add a field of type SayHelloSessionBeanLocal named sayHelloSessionBean.
+----
+@EJB
+private SayHelloSessionBeanLocal sayHelloSessionBean;
+----
+
+4. In the ProcessRequest method of SayHelloServlet, make the following changes.
+a. Add the below lines of code
+----
+String str1=request.getParameter("name");
+String str2=sayHelloSessionBean.sayHello(str1);
+b. Add the below line of code to modify the HTML response produced by the SayHelloServlet.
+----
+out.println("<h1>" + str2 + "</h1>");
+----
+
+
+1. Open the existing index.jsp file from the Web Pages portion of the SessionBeanDemo project.
+
+2. Modify the title and heading of the page to Say Hello.
+
+3. Add a form to the body of the index.jsp page which contains one text box named name and a submit button named OK.
+----
+<form method="post" action="SayHelloServlet">
+Enter Your Name: <input type="text" name="name">
+<input type="submit" value="OK">
+</form>
+------
+
+Run: 1. Right-click SessionBeanDemo project in the projects window and select Build.
+2. In the Projects window, right-click SessionBeanDemo and select Run.
+
+
+
+Calculator: 
+1)SayHelloSessionBeanLocal.java
+package com.example;
+
+import javax.ejb.Local;
+
+@Local
+public interface SayHelloSessionBeanLocal {
+    double add(double a, double b);
+    double subtract(double a, double b);
+    double multiply(double a, double b);
+    String divide(double a, double b);
+    String modulus(double a, double b);
+    String sayHello(String name);
+}
+
+
+2)SayHelloSessionBean.java
+package com.example;
+
+import javax.ejb.Stateless;
+
+/**
+ *
+ * @author Priya
+ */
+@Stateless
+public class SayHelloSessionBean implements SayHelloSessionBeanLocal {
+
+    // Business methods for calculator operations
+
+    public double add(double a, double b) {
+        return a + b;
+    }
+
+    public double subtract(double a, double b) {
+        return a - b;
+    }
+
+    public double multiply(double a, double b) {
+        return a * b;
+    }
+
+    public String divide(double a, double b) {
+        if (b == 0) {
+            return "Error: Cannot divide by zero";
+        } else {
+            return "Result: " + (a / b);
+        }
+    }
+
+    public String modulus(double a, double b) {
+        if (b == 0) {
+            return "Error: Cannot perform modulus with zero";
+        } else {
+            return "Result: " + (a % b);
+        }
+    }
+
+    // Optional: retain the original sayHello() method
+    public String sayHello(String name) {
+        return "Hello " + name;
+    }
+}
+
+3)SayHelloServlet.java
+package com.example;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+import javax.ejb.EJB;
+
+@WebServlet(name = "SayHelloServlet", urlPatterns = {"/SayHelloServlet"})
+public class SayHelloServlet extends HttpServlet {
+
+    @EJB
+    private SayHelloSessionBeanLocal sayHelloSessionBean;
+
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
+        String num1Str = request.getParameter("num1");
+        String num2Str = request.getParameter("num2");
+        String operation = request.getParameter("operation");
+
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+
+        double num1 = 0, num2 = 0;
+        String message = "";
+
+        try {
+            num1 = Double.parseDouble(num1Str);
+            num2 = Double.parseDouble(num2Str);
+
+            // Delegate the operations to the session bean
+            switch (operation) {
+                case "add":
+                    message = "Addition Result: " + sayHelloSessionBean.add(num1, num2);
+                    break;
+                case "subtract":
+                    message = "Subtraction Result: " + sayHelloSessionBean.subtract(num1, num2);
+                    break;
+                case "multiply":
+                    message = "Multiplication Result: " + sayHelloSessionBean.multiply(num1, num2);
+                    break;
+                case "divide":
+                    message = sayHelloSessionBean.divide(num1, num2);
+                    break;
+                case "modulus":
+                    message = sayHelloSessionBean.modulus(num1, num2);
+                    break;
+                default:
+                    message = "Invalid Operation Selected.";
+            }
+
+        } catch (NumberFormatException e) {
+            message = "Invalid input: Please enter valid numbers.";
+        }
+
+        try {
+            out.println("<!DOCTYPE html>");
+            out.println("<html><head><title>Calculator Result</title></head><body>");
+            out.println("<h2>" + message + "</h2>");
+            // Adding a back button to go to the calculator form
+            out.println("<form action=\"index.jsp\" method=\"get\">");
+            out.println("<input type=\"submit\" value=\"Back to Calculator\">");
+            out.println("</form>");
+            out.println("</body></html>");
+        } finally {
+            out.close();
+        }
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    @Override
+    public String getServletInfo() {
+        return "Calculator logic inside SayHelloServlet using Stateless Session Bean";
+    }
+
+}
+
+
+
+
+4)index.jsp
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Simple Calculator</title>
+    </head>
+    <body>
+        <h1>Calculator</h1>
+        <form method="post" action="SayHelloServlet">
+            Enter Number 1: <input type="text" name="num1" required><br><br>
+            Enter Number 2: <input type="text" name="num2" required><br><br>
+            Select Operation:
+            <select name="operation" required>
+                <option value="add">Addition</option>
+                <option value="subtract">Subtraction</option>
+                <option value="multiply">Multiplication</option>
+                <option value="divide">Division</option>
+                <option value="modulus">Modulus</option>
+            </select><br><br>
+            <input type="submit" value="Calculate">
+        </form>
+    </body>
+</html>
+
+
+
+
+
+String
+
+1)SayHelloSessionBeanLocal.java
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.Example;
+
+import javax.ejb.Local;
+
+/**
+ *
+ * @author Priya
+ */
+@Local
+public interface SayHelloSessionBeanLocal {
+    
+    String sayHello(String name) ;
+
+    
+}
+
+2)SayHelloSessionBean.java
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.Example;
+
+import javax.ejb.Stateless;
+
+/**
+ *
+ * @author Priya
+ */
+@Stateless
+public class SayHelloSessionBean implements SayHelloSessionBeanLocal {
+    
+    public String sayHello(String name) {
+        return "Hello " + name;
+}
+
+
+    // Add business logic below. (Right-click in editor and choose
+    // "Insert Code > Add Business Method")
+}
+
+3)SayHelloServlet.java
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package com.Example;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ *
+ * @author Priya
+ */
+@WebServlet(name = "SayHelloServlet", urlPatterns = {"/SayHelloServlet"})
+public class SayHelloServlet extends HttpServlet {
+    @EJB
+private SayHelloSessionBeanLocal sayHelloSessionBean;
+
+
+
+
+    /**
+     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
+     * methods.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+            String str1=request.getParameter("name");
+            String str2=sayHelloSessionBean.sayHello(str1);
+
+        response.setContentType("text/html;charset=UTF-8");
+        PrintWriter out = response.getWriter();
+        try {
+            /* TODO output your page here. You may use following sample code. */
+            out.println("<!DOCTYPE html>");
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Servlet SayHelloServlet</title>");            
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<h1>" + str2 + "</h1>");
+            out.println("</body>");
+            out.println("</html>");
+        } finally {
+                out.close();
+            }
+    }
+
+    // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
+    /**
+     * Handles the HTTP <code>GET</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Handles the HTTP <code>POST</code> method.
+     *
+     * @param request servlet request
+     * @param response servlet response
+     * @throws ServletException if a servlet-specific error occurs
+     * @throws IOException if an I/O error occurs
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        processRequest(request, response);
+    }
+
+    /**
+     * Returns a short description of the servlet.
+     *
+     * @return a String containing servlet description
+     */
+    @Override
+    public String getServletInfo() {
+        return "Short description";
+    }// </editor-fold>
+
+}
+
+4)index.jsp
+<%-- 
+    Document   : index
+    Created on : 9 May, 2025, 12:28:35 AM
+    Author     : Priya
+--%>
+
+<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Say Hello</title>
+    </head>
+    <body>
+        <h1>Say Hello</h1>
+        <form method="post" action="SayHelloServlet">
+    Enter Your Name: <input type="text" name="name">
+    <input type="submit" value="OK">
+    </form>
+    </body>
+</html>
+
+
+
+
+
+
+
+EXP 5TH
+
+
+Project -> CalculatorSessionBean and stateful
+
+1)CalculatorSessionBeanLocal.java
+
+package com.example;
+import javax.ejb.Stateful;
+@Stateful
+public class CalculatorSessionBean implements CalculatorSessionBeanLocal {
+private int lastResult;
+private int currentResult;
+public int add(int num1, int num2) {
+updateLastResult();
+currentResult = num1 + num2;
+return currentResult;
+}
+public int sub(int num1, int num2) {
+updateLastResult();
+currentResult = num1 - num2;
+return currentResult;
+}
+public int mul(int num1, int num2) {
+updateLastResult();
+currentResult = num1 * num2;
+
+return currentResult;
+}
+public int div(int num1, int num2) {
+if (num2 == 0) {
+throw new ArithmeticException("Division by zero");
+}
+updateLastResult();
+currentResult = num1 / num2;
+return currentResult;
+}
+public int mod(int num1, int num2) {
+updateLastResult();
+currentResult = num1 % num2;
+return currentResult;
+}
+private void updateLastResult() {
+lastResult = currentResult;
+}
+public int getLastResult() {
+return lastResult;
+}
+public int getCurrentResult() {
+return currentResult;
+}
+}
+
+
+2)CalculatorSessionBean.java
+package com.example;
+import javax.ejb.Local;
+@Local
+public interface CalculatorSessionBeanLocal {
+int add(int n1, int n2);
+int sub(int n1, int n2);
+int mul(int n1, int n2);
+int div(int n1, int n2);
+int mod(int n1, int n2);
+int getLastResult();
+}
+
+
+3)CalculatorServlet.java
+
+package com.example;
+import java.io.IOException;
+import java.io.PrintWriter;
+import javax.ejb.EJB;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+@WebServlet(name = "CalculatorServlet", urlPatterns = {"/CalculatorServlet"})
+public class CalculatorServlet extends HttpServlet {
+@EJB
+private CalculatorSessionBeanLocal calculatorSessionBean;
+protected void processRequest(HttpServletRequest request, HttpServletResponse response)
+throws ServletException, IOException {
+int result = 0;
+int num1 = Integer.parseInt(request.getParameter("num1"));
+int num2 = Integer.parseInt(request.getParameter("num2"));
+String opt = request.getParameter("cal");
+switch (opt) {
+case "ADD":
+result = calculatorSessionBean.add(num1, num2);
+break;
+case "SUBTRACT":
+result = calculatorSessionBean.sub(num1, num2);
+break;
+case "MULTIPLY":
+result = calculatorSessionBean.mul(num1, num2);
+break;
+
+case "DIVIDE":
+result = calculatorSessionBean.div(num1, num2);
+break;
+case "MOD":
+result = calculatorSessionBean.mod(num1, num2);
+break;
+}
+response.setContentType("text/html;charset=UTF-8");
+PrintWriter out = response.getWriter();
+try {
+out.println("<!DOCTYPE html>");
+out.println("<html>");
+out.println("<head>");
+out.println("<title>Calculator Result</title>");
+out.println("</head>");
+out.println("<body>");
+out.println("<h1>Current Result = " + result + "</h1>");
+out.println("<h2>Last Result = " + calculatorSessionBean.getLastResult() + "</h2>");
+out.println("</body>");
+out.println("</html>");
+} finally {
+out.close();
+}
+}
+@Override
+protected void doGet(HttpServletRequest request, HttpServletResponse response)
+throws ServletException, IOException {
+processRequest(request, response);
+}
+@Override
+protected void doPost(HttpServletRequest request, HttpServletResponse response)
+throws ServletException, IOException {
+processRequest(request, response);
+}
+@Override
+public String getServletInfo() {
+return "Calculator Servlet";
+}
+}
+
+
+4)index.jsp
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Calculator</title>
+</head>
+<body>
+<form method="post" action="CalculatorServlet">
+Enter Your Number 1: <input type="text" name="num1"><br>
+Enter Your Number 2: <input type="text" name="num2"><br><br>
+<input type="submit" value="ADD" name="cal"><br><br>
+
+<input type="submit" value="SUBTRACT" name="cal"><br><br>
+<input type="submit" value="MULTIPLY" name="cal"><br><br>
+<input type="submit" value="DIVIDE" name="cal"><br><br>
+<input type ="submit" value="MOD" name ="cal"><br>
+</form>
+</body>
+</html>
+
+
+
+
+EXP 6TH
+
+
+
+1) Open Netbeans,
+Go to Services -> Servers -> Glassfish Server. Right click and start GlassFish Server
+
+(i)Open server admin console by the URL http://localhost:4848    
+
+1.Click on the JMS Resource -> Connection Factories -> New, now write the JNDI name jms/QueueFactory and select the Resource Type as javax.jms.QueueConnectionFactory then click on ok button.
+
+2.Click on the JMS Resource -> Destination Resources -> New, now write the JNDI name jms/myQueue, physical destination name PC and Resource type javax.jms.Queue then click on ok button.
+
+
+(ii)After creating connection factory and destination resource, go to Netbeans and restart GlassFish Server.
+
+
+
+
+2)
+On Netbeans, click on new project.
+Select Java EE -> Enterprise Application Client
+Click next
+
+Enter Project Name QueueSender and click next.
+
+Select GlassFish Server 4.1 in Server and Java EE 6 and click Finish.
+
+Repeat the same process and create another project QueueReceiver.
+
+3)
+code of QueueSender -> Main.java
+package queuesender;
+
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.Resource;
+import javax.jms.*;
+
+public class Main {
+
+@Resource(mappedName = "jms/QueueFactory")
+private static QueueConnectionFactory factoryQueue;
+
+@Resource(mappedName = "jms/myQueue")
+private static Queue jmsQueue;
+
+public static void main(String[] args) {
+    Scanner sc = new Scanner(System.in);
+    try (QueueConnection connection = factoryQueue.createQueueConnection();
+         QueueSession session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE)) {
+
+        connection.start();
+        MessageProducer msgProducer = session.createProducer(jmsQueue);
+
+        System.out.print("Enter Something: ");
+        String str = sc.nextLine();
+
+        Message msg = session.createTextMessage(str);
+        msgProducer.send(msg);
+
+        System.out.println("Message sent!!");
+        sc.close();
+
+    } catch (JMSException ex) {
+        Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+    }
+}
+}
+ 
+
+code of QueueReceiver -> Main.java
+
+
+package queuereceiver;
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.annotation.Resource;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.Queue;
+import javax.jms.QueueConnection;
+import javax.jms.QueueConnectionFactory;
+import javax.jms.QueueSession;
+import javax.jms.Session;
+
+public class Main {
+
+    @Resource(mappedName = "jms/QueueFactory")
+    private static QueueConnectionFactory factoryQueue;
+
+    @Resource(mappedName = "jms/myQueue")
+    private static Queue jmsQueue;
+
+    public static void main(String[] args) {
+        System.out.println("Hello World Enterprise Application Client!");
+        try (QueueConnection connection = factoryQueue.createQueueConnection();
+             QueueSession session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE)) {
+
+            connection.start();
+            MessageConsumer msgConsumer = session.createConsumer(jmsQueue);
+            Message msg = msgConsumer.receive();
+            String message = msg.getBody(String.class);
+            System.out.println("Message Consumer: " + message);
+
+        } catch (JMSException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+}
+
+4)
+Clean and build both Projects.
+Run QueueSender project.  ............Enter the message you want to send
+
+then Run QueueReceiver project.
+
+
+
+
+
+EXP 7TH 
+
+
+Steps:
+
+1. 
+File->New Project 
+Java Web-> Web Application.
+Click Next.
+
+2.project name as CalculatorProject
+Click Next.
+
+
+3. Verify the following :
+GlassFish Server 3.1.2 is selected as the server.
+Java EE 6 Web is selected as Java EE Version.
+Click Finish.
+
+
+---
+1. Right-click on the CalculatorProject project and select New->Web Service
+
+2. Web Service Name as CalculatorWS and Package as Calculatorpkg
+*select create web service from scratch*
+Click Finish.
+
+-----
+
+go to Web Services Folder ----CalculatorWS...right click-> add operation 
+
+Name: add 
+Return type: int 
+
+click ->add 
+
+name    type  
+1->i       int
+2->j       int
+
+click ok
+
+----
+
+CalculatorWS.java code:
+package calculatorpkg;
+
+import javax.jws.WebService;
+import javax.jws.WebMethod;
+import javax.jws.WebParam;
+
+/**
+ *
+ * @author Priya
+ */
+@WebService()
+public class CalculatorWS {
+
+    
+    @WebMethod(operationName = "add")
+    public int add(@WebParam(name = "i") 
+     int i, @WebParam(name = "j") 
+     int j) {
+        //TODO write your implementation code here:
+        int k=i+j;
+        return k;
+
+    }
+}
+
+-------
+clean and build project 
+go to services in that servers->right click on glassfish server 4.1 ->start/restart(wait)
+then right click on CalculatorProject->deploy
+then right click on CalculatorWS -> test web service
